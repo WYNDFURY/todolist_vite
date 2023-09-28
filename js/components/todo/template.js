@@ -1,6 +1,15 @@
 
 export default function(data) {
-    return `<li><input class='new-todo' type='text' value='${data.content}'>
-    <button class='destroy'></button></li>`;
+    return `
+    <li class="${ data.completed ? 'completed': '' }">
+        <div class="view">
+            <input class="toggle" type="checkbox" ${ data.completed ? 'checked': '' }/>
+            <label>
+                ${data.content}
+            </label>
+            <button class='destroy'></button>
+        </div>
+    </li>`;
 }
+
 

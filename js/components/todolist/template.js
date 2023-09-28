@@ -16,8 +16,7 @@ export default function(data) {
   <input id="toggle-all" class="toggle-all" type="checkbox" />
   <label for="toggle-all">Mark all as complete</label>
   <ul class="todo-list">
-  ${data.todos.forEach(todo => {return todo.render()})}
-  
+  ${data.todos.map(todo => todo.render()).join(' ')}
   </ul>
 </section>
 <footer class="footer">

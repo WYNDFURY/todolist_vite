@@ -15,5 +15,9 @@ export default class {
           // Gestion des erreurs
           console.error(error);
         }
-      }
+    }
+
+    static async addOne(data) {
+      const response = await axios.post(this.apiURL + '/todo', data)
+    }
 }

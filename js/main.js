@@ -1,6 +1,6 @@
 // import '../css/app.css'
 import '../styles.scss';
-import '../css/index.css';
+import '../css/index.scss';
 import TodoList from "./components/todolist/TodoList";
 
 
