@@ -9,8 +9,6 @@ export default class TodoList  {
         this.todos = [];
         this.new_todo = null;
         this.activeTodo = null;
-        this.toggle_todo = null;
-        this.toggle_completed = null;
         this.loadTodos();
     }
 
@@ -20,7 +18,11 @@ export default class TodoList  {
             if(e.code === "Enter"){
                 this.addTodo();
             }
-        } 
+        };
+        document.addEventListener('change', (e) => {
+            if(e.target.matches(".toggle")){
+                // this.loadTodos();
+            }})
     }
 
     toggleCompleted(){
@@ -28,14 +30,15 @@ export default class TodoList  {
             if(e.target.matches(".toggle")){
                 e.target.closest('li').classList.toggle("completed");
                 let id = e.target.closest('li').dataset.id;
-                this.todos[id-1].completed = !this.todos[id-1].completed;
-                console.log(this.todos[id-1].completed);
-                this.updateTodo(this.todos[id-1]);
+                let toggle_completed = this.todos.filter((todo) => todo.id == id)[0];
+                // console.log(this.todos.filter((todo) => todo.id == id)[0]);
+                toggle_completed.completed = !toggle_completed.completed;
+                this.updateTodo(toggle_completed);
             }; 
             this.renderActiveCount();
         })
     }
-
+D
     renderActiveCount() { 
         this.activeTodo = this.todos.filter((todo) => !todo.completed);
         document.querySelector(".todo-count").innerHTML = this.activeTodo.length;
@@ -48,7 +51,7 @@ export default class TodoList  {
     }
 
     async updateTodo(data){
-        const update_todo = await DB.updateOne({
+            await DB.updateOne({
             id: data.id,
             completed : data.completed,
         })
@@ -64,7 +67,6 @@ export default class TodoList  {
         this.todos.push(new_todo);
         this.new_todo.value = "";
         this.renderActiveCount();
-        this.loadTodos();
     }
 
     render(){
