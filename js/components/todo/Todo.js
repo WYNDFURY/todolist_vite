@@ -1,6 +1,6 @@
 import getTemplate from "./template.js";
 
-export default class {
+export default class Todo {
     constructor(data) {
         this.id = data.id;
         this.content = data.content;

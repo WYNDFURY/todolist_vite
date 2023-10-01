@@ -18,6 +18,17 @@ export default class {
     }
 
     static async addOne(data) {
-      const response = await axios.post(this.apiURL + '/todo', data)
+      const response = await axios.post(this.apiURL + '/todo', data);
+      return response.data;
     }
+
+    static async updateOne(data) {
+      const response = await axios.put(this.apiURL + '/todo/' + data.id, data);
+      return response.data;
+    }
+
+    // static async editCompleted(data, id = data.id) {
+    //   const response = await axios.put(this.apiURL + '/todo/' + id, data);
+    //   return response.data;
+    // }
 }
