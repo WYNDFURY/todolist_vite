@@ -27,8 +27,8 @@ export default class {
       return response.data;
     }
 
-    // static async editCompleted(data, id = data.id) {
-    //   const response = await axios.put(this.apiURL + '/todo/' + id, data);
-    //   return response.data;
-    // }
+    static async destroyOne(id) {
+      const response = await axios.delete(this.apiURL + '/todo/' + id);
+      return response.data;
+    }
 }

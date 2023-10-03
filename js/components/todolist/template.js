@@ -9,7 +9,6 @@ export default function(data) {
   <input
     class="new-todo"
     placeholder="What needs to be done?"
-    autofocus
   />
 </header>
 <section class="main">
@@ -23,13 +22,13 @@ export default function(data) {
   <span class="todo-count"></span>
   <ul class="filters">
     <li>
-      <a href="#/">All</a>
+      <a class="all" href="#/">All</a>
     </li>
     <li>
       <a href="#/active" class="selected">Active</a>
     </li>
     <li>
-      <a href="#/completed">Completed</a>
+      <a href="#/completed" class="completed">Completed</a>
     </li>
   </ul>
   <button class="clear-completed">Clear completed</button>

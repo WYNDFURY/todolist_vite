@@ -147,14 +147,14 @@ button {
 	padding: 0;
 }
 
-.todo-list li.editing .edit {
+.todo-list li .editing .edit {
 	display: block;
 	width: 506px;
 	padding: 12px 16px;
 	margin: 0 0 0 43px;
 }
 
-.todo-list li.editing .view {
+.todo-list li .editing .view {
 	display: none;
 }
 
@@ -191,6 +191,14 @@ button {
 }
 
 .todo-list li label {
+	word-break: break-all;
+	padding: 15px 15px 15px 60px;
+	display: block;
+	line-height: 1.2;
+	transition: color 0.4s;
+}
+
+.todo-list li input {
 	word-break: break-all;
 	padding: 15px 15px 15px 60px;
 	display: block;
