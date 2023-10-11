@@ -13,12 +13,29 @@ export default class TodoList  {
         this.init();
     }
 
+//      INITIALISE L'APP
+
     async init() {
         await this.loadTodos();
         this.activateElements();
         this.filtersTodo();
         this.render();
     }
+
+    async loadTodos() {
+        const todos = await DB.findAll();
+        this.todos = todos.map(todo => new Todo(todo));  
+        this.render();      
+    }
+
+    render(){
+        this.elt.innerHTML = getTemplate(this);
+        this.renderActiveCount();
+    }
+
+
+
+//      ACTIVATE LISTENERS
 
     activateElements() {
         document.addEventListener('keypress', (e) => {
@@ -44,30 +61,26 @@ export default class TodoList  {
         })
     }
 
-    filtersTodo(){
-        this.all_todos = this.todos;
-        document.addEventListener('click', (e) => {
-            // console.log(this.all_todos);
-            switch(true){
-                case e.target.matches(".all") :
-                    this.todos = this.all_todos;
-                    console.log(this.all_todos);
-                    this.render();
-                    break;
-                case e.target.matches(".selected") :
-                    this.todos = this.all_todos.filter(todo => todo.completed == false);
-                    console.log(this.all_todos);
-                    // this.todos = selected_todos;
-                    this.render();
-                    break;
-                case e.target.matches(".completed") :
-                    this.todos = this.all_todos.filter(todo => todo.completed == true);
-                    console.log(this.all_todos);
-                    this.render();
-                    break;
-            }
-        })
+//      ADD FUNCTION
+
+    async addTodo(){
+        const add_todo = await DB.addOne({
+            content: this.new_todo.value,
+            completed: false
+        });
+        const new_todo  = new Todo(add_todo);
+        this.todos.push(new_todo);
+
+
+        const todoListContainer = this.elt.querySelector('.todo-list');
+        todoListContainer.insertAdjacentHTML('beforeend', new_todo.render());
+
+        this.new_todo.value = "";
+        this.renderActiveCount();
     }
+
+
+//      EDIT FUNCTIONS
 
     editOneTodo(e){
         if(document.querySelector("input.edit")){
@@ -114,32 +127,6 @@ export default class TodoList  {
         }
     }
 
-    destroyOne(e) {
-        const id = e.target.closest("li").dataset.id;
-        console.log(id);
-        this.todos.filter(todo => todo.id === id).splice(0,0);
-        this.destroyTodo(id);
-    }
-
-    toggleCompleted(e){
-        e.target.closest('li').classList.toggle("completed");
-        let id = e.target.closest('li').dataset.id;
-        let toggle_completed = this.todos.filter((todo) => todo.id == id)[0];
-        toggle_completed.completed = !toggle_completed.completed;
-        this.updateTodo(toggle_completed); 
-    }       
-
-    renderActiveCount() { 
-        this.activeTodo = this.todos.filter((todo) => !todo.completed);
-        document.querySelector(".todo-count").innerHTML = this.activeTodo.length;
-    }
-
-    async loadTodos() {
-        const todos = await DB.findAll();
-        this.todos = todos.map(todo => new Todo(todo));  
-        this.render();      
-    }
-
     async editTodo(data){
         await DB.updateOne({
             id: data.id,
@@ -149,33 +136,86 @@ export default class TodoList  {
         this.render();
     }
 
-    async updateTodo(data){
-            await DB.updateOne({
-            id: data.id,
-            completed : data.completed,
-        })
-        this.render();
+//      DESTROY
+
+    destroyOne(e) {
+        const id = e.target.closest("li").dataset.id;
+        e.target.closest("li").remove();
+        this.todos.filter(todo => todo.id === id).splice(0,0);
+        this.destroyTodo(id);
     }
 
     async destroyTodo(id){
-        await DB.destroyOne(id)
-        this.loadTodos();
-    }
-
-    async addTodo(){
-        const add_todo = await DB.addOne({
-            content: this.new_todo.value,
-            completed: false
-        });
-        const new_todo  = new Todo(add_todo);
-        this.todos.push(new_todo);
-        new_todo.render();
-        this.new_todo.value = "";
-        this.loadTodos();
-    }
-
-    render(){
-        this.elt.innerHTML = getTemplate(this);
+        await DB.destroyOne(id);
         this.renderActiveCount();
     }
+
+
+//      MISC FUNCTIONS
+
+
+    //      -   TOGGLE FUNCTIONS
+
+
+    toggleCompleted(e){
+        e.target.closest('li').classList.toggle("completed");
+        let id = e.target.closest('li').dataset.id;
+        let toggle_completed = this.todos.filter((todo) => todo.id == id)[0];
+        toggle_completed.completed = !toggle_completed.completed;
+        this.updateTodo(toggle_completed); 
+    }    
+    
+    async updateTodo(data){
+        await DB.updateOne({
+        id: data.id,
+        completed : data.completed,
+    })
+    this.renderActiveCount();
+    }    
+
+    renderActiveCount() { 
+        this.activeTodo = document.querySelectorAll('.todo-list li:not(.completed)');
+        document.querySelector(".todo-count").innerHTML = this.activeTodo.length;
+    }
+
+    //      -   FILTER FUNCTIONS
+
+    filtersTodo() {
+        document.addEventListener('click', (e) => {
+            const allTodos = this.elt.querySelectorAll('.todo-list li');
+            
+            switch (true) {
+                case e.target.matches(".all"):
+                    this.showAllTodos(allTodos);
+                    break;
+                case e.target.matches(".selected"):
+                    this.showIncompleteTodos(allTodos);
+                    break;
+                case e.target.matches(".completed"):
+                    this.showCompletedTodos(allTodos);
+                    break;
+            }
+        });
+        
+    }
+    showAllTodos(todos) {
+        todos.forEach(todo => {
+            todo.style.display = 'block';
+        });
+    }
+
+    showIncompleteTodos(todos) {
+        todos.forEach(todo => {
+            const completed = todo.classList.contains('completed');
+            todo.style.display = completed ? 'none' : 'block';
+        });
+    }
+
+    showCompletedTodos(todos) {
+        todos.forEach(todo => {
+            const completed = todo.classList.contains('completed');
+            todo.style.display = completed ? 'block' : 'none';
+        });
+    }
+
 }
